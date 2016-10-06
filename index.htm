@@ -28,7 +28,8 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-d3.json("miserables.json", function(error, graph) {
+d3.json("graph.json", function(error, graph) {
+//  window.alert("json func. error: " + error + ", "+ JSON.stringify(error));
   if (error) throw error;
 
   var link = svg.append("g")
@@ -38,20 +39,37 @@ d3.json("miserables.json", function(error, graph) {
     .enter().append("line")
       .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
 
-  var node = svg.append("g")
+    var nodeG = svg.append("g")
       .attr("class", "nodes")
     .selectAll("circle")
     .data(graph.nodes)
-    .enter().append("circle")
-      .attr("r", 5)
+    .enter();
+    
+
+    var nodeG1 = nodeG.append("g");
+    
+  var node = nodeG1.append("circle")
+      .attr("r", 2)
       .attr("fill", function(d) { return color(d.group); })
       .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended));
+    
+  
 
   node.append("title")
       .text(function(d) { return d.id; });
+    
+//    nodeG.append("g").html("<svg width=\"30px\" height=\"30px\" viewBox=\"0 0 300 300\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n" +
+    nodeG1.html("<svg width=\"30px\" height=\"30px\" viewBox=\"0 0 300 300\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n" +
+					"\t<g>\n" +
+					"\t\t<path d=\"M153.6714,178.9332 L152.7394,181.6902 L201.8764,265.0322 L204.6574,267.0002 L255.9994,178.2202 L204.6574,89.0832 L153.6714,178.9332 Z\" fill=\"#59666C\"></path>\n" +
+					"\t\t<path d=\"M50.2731,0.3039 L0.0001,89.0839 L52.2341,178.9329 L101.9721,89.0839 L101.8381,85.4529 L52.5651,2.1099 L50.2731,0.3039 Z\" fill=\"#59666C\"></path>\n" +
+					"\t\t<path d=\"M50.2731,0.3039 L101.9721,89.0839 L204.6571,89.0839 L152.6011,0.3039 L50.2731,0.3039 Z\" fill=\"#BCAE79\"></path>\n" +
+					"\t\t<path d=\"M52.2342,178.9332 L102.8642,267.0002 L204.6572,267.0002 L153.6712,178.9332 L52.2342,178.9332 Z\" fill=\"#BCAE79\"></path>\n" +
+					"\t</g>\n" +
+					"</svg>");
 
   simulation
       .nodes(graph.nodes)
@@ -67,10 +85,13 @@ d3.json("miserables.json", function(error, graph) {
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
 
-    node
+    nodeG1
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
   }
+//     nodeG1.attr("transform", function (d) {
+//        return "translate(" + d.x + "," + d.y + ")";
+//    });
 });
 
 function dragstarted(d) {
