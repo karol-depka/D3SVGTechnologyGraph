@@ -42,6 +42,7 @@ var graphData = /*JSON.stringify(*/{
                     + " version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n" +
 //					'"'\t<g transform="translate(-150)">\n' +
 					'<g>' +
+//                    '<circle r="100"/>' +
 					"\t\t<path d=\"M153.6714,178.9332 L152.7394,181.6902 L201.8764,265.0322 L204.6574,267.0002 L255.9994,178.2202 L204.6574,89.0832 L153.6714,178.9332 Z\" fill=\"#59666C\"></path>\n" +
 					"\t\t<path d=\"M50.2731,0.3039 L0.0001,89.0839 L52.2341,178.9329 L101.9721,89.0839 L101.8381,85.4529 L52.5651,2.1099 L50.2731,0.3039 Z\" fill=\"#59666C\"></path>\n" +
 					"\t\t<path d=\"M50.2731,0.3039 L101.9721,89.0839 L204.6571,89.0839 L152.6011,0.3039 L50.2731,0.3039 Z\" fill=\"#BCAE79\"></path>\n" +
@@ -141,11 +142,13 @@ function update() {
       .call(force.drag);
 
   nodeEnter.append("circle")
-      .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; });
+      .attr("r", function(d) { return Math.sqrt(d.size) / 2 || 4.5; });
 
-  nodeEnter.append("text")
-      .attr("dy", ".35em")
-      .text(function(d) { return d.name; });
+//  nodeEnter.append("text")
+//      .attr("dy", ".35em")
+//      .text(function(d) { return d.name; });
+    
+    var nodeGForHtml = nodeEnter.append("g")
 
 //nodeEnter.html("<svg width=\"30px\" height=\"30px\" viewBox=\"0 0 300 300\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n" +
 //					"\t<g>\n" +
@@ -155,7 +158,7 @@ function update() {
 //					"\t\t<path d=\"M52.2342,178.9332 L102.8642,267.0002 L204.6572,267.0002 L153.6712,178.9332 L52.2342,178.9332 Z\" fill=\"#BCAE79\"></path>\n" +
 //					"\t</g>\n" +
 //					"</svg>");
-nodeEnter.html(function(d) {
+nodeGForHtml.html(function(d) {
     return d.body;
 });
     
