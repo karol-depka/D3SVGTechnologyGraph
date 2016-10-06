@@ -28,7 +28,7 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-d3.json("graph.json", function(error, graph) {
+d3.json("technologies.json", function(error, graph) {
 //  window.alert("json func. error: " + error + ", "+ JSON.stringify(error));
   if (error) throw error;
 
@@ -71,7 +71,41 @@ d3.json("graph.json", function(error, graph) {
 					"\t</g>\n" +
 					"</svg>");
 
-  simulation
+//    // create a subselection, wiring up data, using a function to define 
+//    //how it's suppossed to know what is appended/updated/exited
+//    node = graph.data(nodes, function (d) {return d.id;});
+//    //Get rid of old nodes:  
+//    node.exit().remove();
+//    //-------------------
+//    //create new nodes by making groupd elements, that contain circls and text:
+//    var nodeEnter = g.node.enter()
+//        .append("g")
+//        .attr("class", "node")
+//        .on("click", click)
+//        .call(g.force.drag);
+//    //circle within the single node group:
+//    nodeEnter.append("circle")
+//        .attr("r", function (d) {return Math.sqrt(d.size) / 10 || 4.5;});
+//    //text within the single node group:
+//    nodeEnter.append("text")
+//        .attr("dy", ".35em")
+//        .text(function (d) {
+//        return d.name;
+//    });
+//    nodeEnter.html("<svg width=\"30px\" height=\"30px\" viewBox=\"0 0 300 300\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n" +
+//					"\t<g>\n" +
+//					"\t\t<path d=\"M153.6714,178.9332 L152.7394,181.6902 L201.8764,265.0322 L204.6574,267.0002 L255.9994,178.2202 L204.6574,89.0832 L153.6714,178.9332 Z\" fill=\"#59666C\"></path>\n" +
+//					"\t\t<path d=\"M50.2731,0.3039 L0.0001,89.0839 L52.2341,178.9329 L101.9721,89.0839 L101.8381,85.4529 L52.5651,2.1099 L50.2731,0.3039 Z\" fill=\"#59666C\"></path>\n" +
+//					"\t\t<path d=\"M50.2731,0.3039 L101.9721,89.0839 L204.6571,89.0839 L152.6011,0.3039 L50.2731,0.3039 Z\" fill=\"#BCAE79\"></path>\n" +
+//					"\t\t<path d=\"M52.2342,178.9332 L102.8642,267.0002 L204.6572,267.0002 L153.6712,178.9332 L52.2342,178.9332 Z\" fill=\"#BCAE79\"></path>\n" +
+//					"\t</g>\n" +
+//					"</svg>");
+//    //All nodes, do the following:
+//    node.select("circle")
+//        .style("fill", color); //calls delegate
+    //-------------------
+    
+    simulation
       .nodes(graph.nodes)
       .on("tick", ticked);
 
