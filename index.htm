@@ -15,13 +15,16 @@
 tech {
     border-radius: 4px;
     background: #e6e6e6;
-    padding: 5px;
+    border-color: #ff0000 #0000ff;
+    padding: 8px;
     /*width: 200px;*/
     height: 2000px;
+    transition: all 0.2s ease-in;
 }
 
 tech:hover {
     background-color: yellow;
+    transition: all 0.2s ease-in;
 }
 
 </style>
@@ -566,6 +569,14 @@ var nodeCircle = nodeG1.append("circle")
 var nodeCircle2 = nodeG1.append("circle")
         .attr("r", radiusFunc)
         .attr("fill", d3.rgb(180,180,180, 0))
+        .on("mouseover", function(d) {
+//            $('tech').hover(function() {
+            $('.'+d.id).css('background-color','rgba(0, 0, 0, 0.6)');
+//        window.alert('You clicked .class-name');
+        })
+        .on("mouseout", function(d) {
+            $('.'+d.id).css('background-color','rgba(200, 200, 200, 0.6)');
+        })
         .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -664,15 +675,22 @@ function dragended(d) {
     </g>
 </svg>&nbsp;Gradle</tech>
     </p>
-    <p>Using <tech>Maven</tech>, <tech><svg style="" x="-22" dy="-100" width="12px" height="12px" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
+    <p>Using <tech class=Maven>Maven</tech>, <tech class=Gradle><svg style="" x="-22" dy="-100" width="12px" height="12px" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
         <g>
             <path d="M105.609463,45.7403268 L177.767595,45.7403268 L214.168405,108.789043 L255.737027,108.789043 C246.273992,47.34207 193.17242,0.290863813 129.076794,0.290863813 C112.867113,0.290863813 97.3746304,3.32999222 83.099393,8.82054475 L105.609463,45.7403268" fill="#006533"></path>
             <path d="M216.097868,146.762708 L177.767595,213.15337 L81.1121556,213.15337 L32.7849339,129.447346 L71.3951128,62.5715798 L50.0634397,27.584249 C20.1532763,51.0465992 0.913431907,87.4922335 0.913431907,128.454226 C0.913431907,199.236732 58.2942879,256.617588 129.076794,256.617588 C193.640591,256.617588 247.030039,208.869105 255.917323,146.762708 L216.097868,146.762708" fill="#82B816"></path>
             <path d="M174.510319,128.114553 C174.510319,153.394802 154.01737,173.887751 128.737121,173.887751 C103.457868,173.887751 82.9649183,153.394802 82.9649183,128.114553 C82.9649183,102.8353 103.457868,82.3423502 128.737121,82.3423502 C154.01737,82.3423502 174.510319,102.8353 174.510319,128.114553" fill="#006532"></path>
         </g>
-    </svg>&nbsp;Gradle</tech>
+    </svg>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Java>Java</tech>
     </p>
     </div>
+
+<h2>Oblong Industries</h2>
+<tech clas=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Java>Java</tech>. Writing tests using <tech class=Groovy>Groovy</tech>
+<h2>CollabNet Inc.</h2>
+<tech clas=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech>
+<h2>o2.pl</h2>
+<tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech>
 
 <script>
     $('tech').hover(function() {
