@@ -297,16 +297,17 @@ var graph = {
     var nodeG1 = nodeG.append("g")
         .attr("class", "node");
 
-    
-  var nodeCircle = nodeG1.append("circle")
-      .attr("r", 20)
+
+const radius = 20;
+var nodeCircle = nodeG1.append("circle")
+      .attr("r", radius)
       .attr("fill", function(d) { return color; })
       .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended));
-    
-  
+
+
 
   nodeCircle.append("title")
       .text(function(d) { return d.id; });
@@ -314,6 +315,14 @@ var graph = {
     nodeG1.append("g").html(function(d) {
         return '<svg width=\"30px\" height=\"30px\" x="-15" y="-15"' + d.body;
     });
+
+var nodeCircle2 = nodeG1.append("circle")
+        .attr("r", radius)
+        .attr("fill", d3.rgb(180,180,180, 0))
+        .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
 
 //    // create a subselection, wiring up data, using a function to define 
 //    //how it's suppossed to know what is appended/updated/exited
