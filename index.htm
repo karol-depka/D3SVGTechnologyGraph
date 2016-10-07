@@ -15,7 +15,8 @@
 tech {
     border-radius: 4px;
     background: #e6e6e6;
-    border-color: #ff0000 #0000ff;
+    border-style: solid;
+    border-color: #e0e0e0;
     padding: 8px;
     /*width: 200px;*/
     height: 2000px;
@@ -43,6 +44,11 @@ var color = d3.rgb(230,230,230, 128);
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
     .force("charge", d3.forceManyBody())
+//    .force("charge", function(d) {
+////        return (d.sizeMult ? d.sizeMult : 1) * 100 }
+//                return -1000000
+//            }
+//        )
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 var bigSize = 1.76;
