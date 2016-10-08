@@ -54,13 +54,12 @@ var svg = d3.select("svg"),
 var color = d3.rgb(230,230,230, 128);
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody())
-//    .force("charge", function() {
+    .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(2))
+    .force("charge", d3.forceManyBody().strength(-350))
+//simulation.force("charge", function() {
 ////        return (d.sizeMult ? d.sizeMult : 1) * 100 }
-//                return -1
-//            }
-//        )
+//            return -1000000;
+//        })
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 var bigSize = 1.76;
