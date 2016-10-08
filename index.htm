@@ -62,8 +62,7 @@ var simulation = d3.forceSimulation()
 //        })
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-var bigSize = 1.76;
-var midSize = 1.25;
+const bigSize = 1.76, midSize = 1.25;
 
 var nodes = [
     {"id": "Java", "group": 1, sizeMult: bigSize, body:"viewBox=\"0 0 256 346\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n"+
@@ -559,11 +558,12 @@ var links = [
     {source: "Java", target: "Groovy"},
     {source: "Java", target: "Maven"},
     {source: "Java", target: "Hibernate"},
-    {source: "Hibernate", target: "MySQL"},
-    {source: "Hibernate", target: "PostgreSQL"},
-    {source: "Android", target: "Gradle"},
+    {source: "Hibernate", target: "MySQL", distance: 0.3},
+    {source: "Hibernate", target: "PostgreSQL", distance: 0.3},
+    {source: "Android", target: "Gradle", distance: 1.5},
+    {source: "Gradle", target: "Groovy", distance: 1.5},
     {source: "Android", target: "Kotlin"},
-    {source: "Android", target: "GooglePlay"},
+    {source: "Android", target: "GooglePlay", distance: 0.7},
     {source: "Android", target: "Ionic"},
     {source: "Cordova", target: "iOS"},
     {source: "Cordova", target: "Ionic"},
@@ -576,19 +576,18 @@ var links = [
     {source: "HTML5", target: "SVG"},
     {source: "HTML5", target: "JavaScript"},
     {source: "JavaScript", target: "Angular2"},
-    {source: "Linux", target: "Debian"},
-    {source: "Debian", target: "Ubuntu"},
-    {source: "Linux", target: "Android"},
-    {source: "Linux", target: "RedHat"},
-    {source: "RedHat", target: "CentOS"},
-    {source: "iOS", target: "Ionic"},
+    {source: "Linux", target: "Debian", distance: 0.3},
+    {source: "Debian", target: "Ubuntu", distance: 0.3},
+    {source: "Linux", target: "Android", distance: 0.7},
+    {source: "Linux", target: "RedHat", distance: 0.3},
+    {source: "RedHat", target: "CentOS", distance: 0.3},
+    {source: "iOS", target: "Ionic", distance: 0.3},
     {source: "Angular2", target: "Ionic"},
-    {source: "iOS", target: "Swift"},
-    {source: "Git", target: "GitHub"},
+    {source: "iOS", target: "Swift", distance: 0.2},
+    {source: "Git", target: "GitHub", distance: 0.3},
     {source: "Git", target: "Linux", thick: 0},
-    {source: "Git", target: "Subversion", thick: 0},
+    {source: "Git", target: "Subversion", distance: 0.3, thick: 0},
 //    {source: "Git", target: "Android", thick: 0},
-    {source: "Gradle", target: "Groovy"},
 ];
 
 var graph = { nodes: nodes, links: links  };
@@ -601,6 +600,9 @@ var graph = { nodes: nodes, links: links  };
 //      .attr("stroke-width", 2)
       .attr("stroke-width", function(d) { return Math.sqrt(d.thick == null ? 1 : d.thick ); });
 
+
+
+
     var nodeG = svg.append("g")
       .attr("class", "nodes")
     .selectAll(".node")
@@ -610,6 +612,17 @@ var graph = { nodes: nodes, links: links  };
     var nodeG1 = nodeG.append("g")
         .attr("class", "node");
 
+simulation
+        .nodes(graph.nodes)
+        .on("tick", ticked);
+
+simulation.force("link")
+        .links(graph.links)
+        .distance(function(link) {
+            //        return link.graph === 0 ? height/2 : height/4;
+            var multip = link.distance == null ? 1 : link.distance;
+            return multip * 70;
+        });
 
 const defaultRadius = 20;
 const radiusFunc = function(d) {
@@ -622,6 +635,7 @@ var nodeCircle = nodeG1.append("circle")
 
                 .attr("fill", function(d) { return color; })
         ;
+
 
 
   nodeCircle.append("title")
@@ -688,16 +702,6 @@ var nodeCircle2 = nodeG1.append("circle")
 //        .style("fill", color); //calls delegate
     //-------------------
     
-    simulation
-      .nodes(graph.nodes)
-      .on("tick", ticked);
-
-  simulation.force("link")
-      .links(graph.links)
-          .distance(function(link) {
-//        return link.graph === 0 ? height/2 : height/4;
-              return 70;
-          });
 
   function ticked() {
     link
