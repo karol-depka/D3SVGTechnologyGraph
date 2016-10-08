@@ -21,11 +21,23 @@ tech {
     /*width: 200px;*/
     height: 2000px;
     transition: all 0.2s ease-in;
+
 }
 
+/*@keyframes tech {*/
+    /*0% { transform: scale(1); }*/
+    /*30% { transform: scale(1); }*/
+    /*40% { transform: scale(1.08); }*/
+    /*50% { transform: scale(1); }*/
+    /*60% { transform: scale(1); }*/
+    /*70% { transform: scale(1.05); }*/
+    /*80% { transform: scale(1); }*/
+    /*100% { transform: scale(1); }*/
+/*}*/
 tech:hover {
     background-color: yellow;
     transition: all 0.2s ease-in;
+    transform: scale(1.18);
 }
 
 </style>
@@ -44,9 +56,9 @@ var color = d3.rgb(230,230,230, 128);
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
     .force("charge", d3.forceManyBody())
-//    .force("charge", function(d) {
+//    .force("charge", function() {
 ////        return (d.sizeMult ? d.sizeMult : 1) * 100 }
-//                return -1000000
+//                return -1
 //            }
 //        )
     .force("center", d3.forceCenter(width / 2, height / 2));
@@ -551,15 +563,11 @@ const radiusFunc = function(d) {
 };
 var nodeCircle = nodeG1.append("circle")
       .attr("r", radiusFunc )
-//                .attr("class", d.id)
+                .attr("id2", function(d) { return d.id } )
+                .attr("id", function(d) { return d.id } )
 
                 .attr("fill", function(d) { return color; })
-
-//      .call(d3.drag()
-//          .on("start", dragstarted)
-//          .on("drag", dragged)
-//          .on("end", dragended));
-;
+        ;
 
 
   nodeCircle.append("title")
@@ -578,10 +586,14 @@ var nodeCircle2 = nodeG1.append("circle")
         .on("mouseover", function(d) {
 //            $('tech').hover(function() {
             $('.'+d.id).css('background-color','rgba(0, 0, 0, 0.6)');
+//            $("[id2='"+ d.id + "']").css('background-color','rgba(0, 0, 0, 0.6)');
+            d3.select(this).attr("r", 10).style("fill", "red");
+            $("#"+d.id).css('background-color','rgba(0, 0, 0, 0.6)');
 //        window.alert('You clicked .class-name');
         })
         .on("mouseout", function(d) {
             $('.'+d.id).css('background-color','rgba(200, 200, 200, 0.6)');
+            d3.select(this).attr("r", 5.5).style("fill", "#fff8ee");
         })
         .call(d3.drag()
                 .on("start", dragstarted)
@@ -692,11 +704,13 @@ function dragended(d) {
     </div>
 
 <h2>Oblong Industries</h2>
-<tech clas=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Java>Java</tech>. Writing tests using <tech class=Groovy>Groovy</tech>
+<tech class=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Java>Java</tech>. Writing tests using <tech class=Groovy>Groovy</tech>
 <h2>CollabNet Inc.</h2>
-<tech clas=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech>
+<tech class=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech>
 <h2>o2.pl</h2>
 <tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech>
+<h2>Computer Science degree</h2>
+Learnt technologies like <tech class=MySQL>MySQL</tech>
 
 <script>
     $('tech').hover(function() {
