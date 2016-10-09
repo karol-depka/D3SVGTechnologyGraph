@@ -17,7 +17,7 @@ tech {
     background: #e6e6e6;
     border-style: solid;
     border-color: #e0e0e0;
-    padding: 8px;
+    padding: 5px;
     /*width: 200px;*/
     height: 2000px;
     transition: all 0.2s ease-in;
@@ -72,6 +72,22 @@ const HTML5 = "HTML5";
 const TypeScript = "TypeScript";
 const Angular2 = "Angular2";
 const JavaScript = "JavaScript";
+const CalabashAndroid = "CalabashAndroid";
+const jQuery = "jQuery";
+const Inkscape = "Inkscape";
+const Illustrator = "Illustrator";
+const AffinityDesigner = "AffinityDesigner";
+const Lua = "Lua";
+const Perl = "Perl";
+const SOAP = "SOAP";
+const Grinder = "Grinder";
+const SVG = "SVG";
+const Python = "Python";
+const XML = "XML";
+const Selendroid = "Selendroid";
+const JavaEE = "JavaEE";
+const JCIP = "JCIP";
+
 var nodes = [
     {"id": Java, "group": 1, sizeMult: bigSize, body:"viewBox=\"0 0 256 346\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n"+
                 "\t<g>\n"+
@@ -207,7 +223,7 @@ var nodes = [
         "        <path d=\"M127.889582,155.854066 L127.889582,155.932132 L205.032791,155.932132 L205.673495,148.753582 L207.128615,132.562989 L207.892396,123.994725 L127.889582,123.994725 L127.889582,155.854066 L127.889582,155.854066 Z\" fill=\"#FFFFFF\"></path>\n"+
         "    </g>\n"+
         "</svg>" },
-    {"id": "SVG", "group": 1, body: "id=\"svg2\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 300 300\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n"+
+    {"id": SVG, "group": 1, body: "id=\"svg2\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 300 300\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n"+
         " <metadata id=\"metadata29\">\n"+
         "  <rdf:RDF>\n"+
         "   <cc:Work rdf:about=\"\">\n"+
@@ -664,7 +680,7 @@ var nodes = [
 //        "   style=\"letter-spacing:0px\"\n"+
 //        "   id=\"flowSpan3066\">n</flowSpan>it</flowSpan></flowSpan></flowPara></flowRoot>  </g>\n"+
 //        "</svg>\n"},
-    {"id": "Python", "group": 1, body: "viewBox=\"0 0 256 255\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n"+
+    {"id": Python, "group": 1, body: "viewBox=\"0 0 256 255\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid\">\n"+
         "    <defs>\n"+
         "        <linearGradient x1=\"12.9593594%\" y1=\"12.0393928%\" x2=\"79.6388325%\" y2=\"78.2008538%\" id=\"linearGradient-1\">\n"+
         "            <stop stop-color=\"#387EB8\" offset=\"0%\"></stop>\n"+
@@ -868,7 +884,39 @@ var nodes = [
         "        <path d=\"M176.765333,242.016 L95.808,242.016 C112.104,231.952 126.192,218.666667 137.250667,203.088 L176.765333,242.016 L176.765333,242.016 Z M122.312,188.370667 L83.152,149.781333 C72.3333333,173.032 48.7573333,189.202667 21.4666667,189.202667 L0,189.202667 L0,242.410667 L21.4666667,242.410667 C63.4773333,242.410667 100.557333,220.922667 122.312,188.370667 L122.312,188.370667 L122.312,188.370667 Z\" fill=\"url(#linearGradient-6)\"></path>\n"+
         "    </g>\n"+
         "</svg>\n"},
+    {id: "Swing" },
+    {id: "JGraph" },
+    {id: "JFreeChart" },
+    {id: "GWT" },
+    {id: "Guice" },
+    {id: "XMLSchema", body: "XMLSchema"},
+    {id: "JAXB" },
+    {id: "iText" },
+    {id: "JUnit" },
+    {id: "Tomcat" },
+    {id: "C" },
+    {id: "C++" },
+    {id: "OpenGL" },
+    {id: "Mockito" },
+    {id: "Dagger" },
+    {id: "Fresco" },
+    {id: "RecyclerView" },
+    {id: "GlazedLists" },
+    {id: JavaEE },
+    {id: CalabashAndroid },
+    {id: jQuery },
+    {id: Inkscape },
+    {id: Illustrator },
+    {id: AffinityDesigner },
+    {id: Lua },
+    {id: Perl },
+    {id: Grinder },
+    {id: XML },
+    {id: SOAP },
+    {id: Selendroid },
+    {id: JCIP },
 ];
+
 var links = [
     {source: Java, target: "Scala"},
     {source: Java, target: Android},
@@ -884,7 +932,10 @@ var links = [
     {source: Android, target: Kotlin, distance:1.3},
     {source: Android, target: "GooglePlay", distance: 1.7},
     {source: Android, target: "Ionic"},
+    {source: Android, target: CalabashAndroid},
+    {source: CalabashAndroid, target: "Ruby", distance: 0.001},
     {source: Android, target: "Firebase"},
+    {source: Angular2, target: "Firebase"},
     {source: "Cordova", target: "iOS"},
     {source: "Cordova", target: "Ionic"},
     {source: "Cordova", target: Android},
@@ -896,7 +947,7 @@ var links = [
     {source: TypeScript, target: JavaScript},
     {source: Angular2, target: "Ionic"},
     {source: HTML5, target: "CSS", distance: 0.1},
-    {source: HTML5, target: "SVG", distance: 0.1},
+    {source: HTML5, target: SVG, distance: 0.1},
     {source: HTML5, target: JavaScript},
     {source: JavaScript, target: Angular2},
     {source: "Linux", target: "Debian", distance: 0.3},
@@ -909,12 +960,36 @@ var links = [
     {source: "Git", target: "GitHub", distance: 0.3},
     {source: "Git", target: "Linux", thick: 0},
     {source: "Git", target: "Subversion", distance: 0.3, thick: 0},
-    {source: "Ruby", target: "Linux", distance: 0.5, thick: 0},
-    {source: "Python", target: "Linux", distance: 0.5, thick: 0},
-    {source: "Python", target: "Ruby", distance: 0.5, thick: 0},
-    {source: "D3", target: "SVG", distance: 0.5, thick: 0},
-    {source: "D3", target: "SVG", distance: 0.5, thick: 0},
-//    {source: "Git", target: "Android", thick: 0},
+    {source: Python, target: "Ruby", distance: 0.5, thick: 0},
+    {source: "D3", target: SVG, distance: 0.5},
+    {source: Java, target: "GWT"},
+    {source: "Swing", target: "JGraph"},
+    {source: "Swing", target: "JFreeChart"},
+    {source: Java, target: "Guice"},
+    {source: Java, target: "Swing"},
+    {source: Java, target: "Tomcat"},
+    {source: Java, target: "JUnit"},
+    {source: Java, target: "iText"},
+    {source: Java, target: "JAXB"},
+    {source: "JAXB", target: "XMLSchema"},
+    {source: "C", target: "C++"},
+    {source: "C", target: "OpenGL"},
+    {source: "C", target: Android, thick: 0},
+    {source: Android, target: "Dagger"},
+    {source: Android, target: "Fresco"},
+    {source: Android, target: "RecyclerView"},
+    {source: "GlazedLists", target: Java},
+    {source: JavaEE, target: Java},
+    {source: jQuery, target: JavaScript},
+    {source: Selendroid, target: Android},
+    {source: SVG, target: Inkscape},
+    {source: SVG, target: Illustrator},
+    {source: SVG, target: AffinityDesigner},
+    {source: Python, target: Grinder},
+    {source: Lua, target: Python, thick:0},
+    {source: Perl, target: Python, thick:0},
+    {source: SOAP, target: XML},
+    {source: Java, target: JCIP},
 ];
 
 var graph = { nodes: nodes, links: links  };
@@ -958,6 +1033,7 @@ var nodeCircle = nodeG1.append("circle")
                 .attr("id", function(d) { return d.id } )
 
                 .attr("fill", function(d) { return color; })
+                .attr("title", "TEST")
         ;
 
 
@@ -970,10 +1046,12 @@ var nodeCircle = nodeG1.append("circle")
         var size = d.sizeMult ? d.sizeMult * defaultSize : defaultSize;
         var offset = size / -2;
         const body = d.body;
-        if (body.trim().endsWith("</svg>")) {
+        if (d.body == null) {
+            return '<text>' +  d.id + '</text>';
+        } else if (body.trim().endsWith("</svg>")) {
             return '<svg width=\"' + size + 'px\" height=\"' + size + 'px\" x="' + offset + '" y="' + offset + '"' + body;
         } else {
-            return body;
+            return '<text>' +  d.body + '</text>';
         }
     });
 
