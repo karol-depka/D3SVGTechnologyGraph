@@ -62,7 +62,7 @@ var simulation = d3.forceSimulation()
     .force("link",
             d3.forceLink().id(function(d) { return d.id; })
                     .strength(function(d) {
-                        console.log("d.strengthMul: " + d.strengthMul);
+//                        console.log("d.strengthMul: " + d.strengthMul);
                         return 3;
 //                        return 1 / Math.min(count(link.source), count(link.target));
 //                        return (typeof d.strengthMul === "undefined") ? 3 : d.strengthMul
@@ -904,7 +904,7 @@ var nodes = [
     {id: "JFreeChart" },
     {id: "GWT" },
     {id: "Guice" },
-    {id: "XMLSchema", body: "XML<br/>Schema"},
+    {id: "XMLSchema", html: "XML<br/>Schema"},
     {id: "JAXB" },
     {id: "iText" },
     {id: "JUnit" },
@@ -915,14 +915,14 @@ var nodes = [
     {id: "Mockito" },
     {id: "Dagger" },
     {id: "Fresco" },
-    {id: "RecyclerView", body: "Recycler<br/>View" },
-    {id: "GlazedLists", body: "Glazed<br/>Lists" },
+    {id: "RecyclerView", html: "Recycler<br/>View" },
+    {id: "GlazedLists", html: "Glazed<br/>Lists" },
     {id: JavaEE },
-    {id: CalabashAndroid, body: "Calabash<br/>Android" },
+    {id: CalabashAndroid, html: "Calabash<br/>Android" },
     {id: jQuery },
     {id: Inkscape },
     {id: Illustrator },
-    {id: AffinityDesigner, body: "Affinity<br/>Designer" },
+    {id: AffinityDesigner, html: "Affinity<br/>Designer" },
     {id: Lua },
     {id: Perl },
     {id: Grinder },
@@ -1060,27 +1060,44 @@ var nodeCircle = nodeG1.append("circle")
         ;
 
 
+const foW = 100; // foreign object width
+const foH = 50;
+const defaultSize = 30;
+nodeG1.append("g").html(function(d) {
+    var bodyText = d.body || "";
+    var size = d.sizeMult ? d.sizeMult * defaultSize : defaultSize;
+
+    if (bodyText.trim().endsWith("</svg>")) {
+        return '<svg width=\"' + size + 'px\" height=\"' + size + 'px\" ' +
+//                        'x="'+ (foW-iconW)/2 + '" y="' + (foH-iconH)/2 + '"' + bodyText;
+                'x="'+ -size/2 + '" y="' + -size/2 + '"' + bodyText;
+    } else {
+        return "";
+    }
+});
+const border=0;
 nodeG1.append("foreignObject")
-        .attr("width", 100)
-        .attr("height", 50)
-        .attr("x", -50)
-        .attr("y", -25)
-        .append("xhtml:body")
+        .attr("style", "border: " + border + "px solid green")
+        .attr("width", foW)
+        .attr("height", foH)
+        .attr("x", -foW/2)
+        .attr("y", -foH/2)
+//        .append("xhtml:body").attr("height", "100%")
         .style("font", "9px 'Helvetica Neue'")
 //        .html("<div style='text-align:center;  border: 1px solid green;'>Foreign<br/><b>Object</b>");
         .html(function(d) {
-            const defaultSize = 30;
-            var size = d.sizeMult ? d.sizeMult * defaultSize : defaultSize;
-            var offset = size / -2;
-            var bodyText = d.body || d.id;
-
-            if (bodyText.trim().endsWith("</svg>")) {
-                return '<svg width=\"' + size + 'px\" height=\"' + size + 'px\" x="' + offset + '" y="' + offset + '"' + bodyText;
-            } else {
-                return "<div style='text-align:center; '>"+ bodyText + "</div>";
-//            return '<text>' +  d.body + '</text>';
+            if ( d.body ) {
+                return ""; // has icon - no need for text
             }
-    });
+
+//            var iconW = size, iconH = size;
+//            var offset = size / -2;
+            var bodyText = d.html || d.id;
+
+                return "<div style='display: table; text-align:center; height:100%; width:100%; border: " + border + "px solid green; '>" +
+                        "<p style='display: table-cell; vertical-align: middle'>"+ bodyText + "</p></div>";
+//            return '<text>' +  d.body + '</text>';
+        });
 
 var nodeCircle2 = nodeG1.append("circle")
         .attr("r", radiusFunc)
