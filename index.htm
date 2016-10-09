@@ -904,7 +904,7 @@ var nodes = [
     {id: "JFreeChart" },
     {id: "GWT" },
     {id: "Guice" },
-    {id: "XMLSchema", body: "XMLSchema"},
+    {id: "XMLSchema", body: "XML<br/>Schema"},
     {id: "JAXB" },
     {id: "iText" },
     {id: "JUnit" },
@@ -915,14 +915,14 @@ var nodes = [
     {id: "Mockito" },
     {id: "Dagger" },
     {id: "Fresco" },
-    {id: "RecyclerView" },
-    {id: "GlazedLists" },
+    {id: "RecyclerView", body: "Recycler<br/>View" },
+    {id: "GlazedLists", body: "Glazed<br/>Lists" },
     {id: JavaEE },
-    {id: CalabashAndroid },
+    {id: CalabashAndroid, body: "Calabash<br/>Android" },
     {id: jQuery },
     {id: Inkscape },
     {id: Illustrator },
-    {id: AffinityDesigner },
+    {id: AffinityDesigner, body: "Affinity<br/>Designer" },
     {id: Lua },
     {id: Perl },
     {id: Grinder },
@@ -932,6 +932,7 @@ var nodes = [
     {id: JCIP },
     {id: Gerrit },
     {id: FakeRuby },
+        // TODO: RxJava
 ];
 
 var links = [
@@ -1059,20 +1060,26 @@ var nodeCircle = nodeG1.append("circle")
         ;
 
 
+nodeG1.append("foreignObject")
+        .attr("width", 100)
+        .attr("height", 50)
+        .attr("x", -50)
+        .attr("y", -25)
+        .append("xhtml:body")
+        .style("font", "9px 'Helvetica Neue'")
+//        .html("<div style='text-align:center;  border: 1px solid green;'>Foreign<br/><b>Object</b>");
+        .html(function(d) {
+            const defaultSize = 30;
+            var size = d.sizeMult ? d.sizeMult * defaultSize : defaultSize;
+            var offset = size / -2;
+            var bodyText = d.body || d.id;
 
-
-    nodeG1.append("g").html(function(d) {
-        const defaultSize = 30;
-        var size = d.sizeMult ? d.sizeMult * defaultSize : defaultSize;
-        var offset = size / -2;
-        const body = d.body;
-        if (d.body == null) {
-            return '<text>' +  d.id + '</text>';
-        } else if (body.trim().endsWith("</svg>")) {
-            return '<svg width=\"' + size + 'px\" height=\"' + size + 'px\" x="' + offset + '" y="' + offset + '"' + body;
-        } else {
-            return '<text>' +  d.body + '</text>';
-        }
+            if (bodyText.trim().endsWith("</svg>")) {
+                return '<svg width=\"' + size + 'px\" height=\"' + size + 'px\" x="' + offset + '" y="' + offset + '"' + bodyText;
+            } else {
+                return "<div style='text-align:center; '>"+ bodyText + "</div>";
+//            return '<text>' +  d.body + '</text>';
+            }
     });
 
 var nodeCircle2 = nodeG1.append("circle")
