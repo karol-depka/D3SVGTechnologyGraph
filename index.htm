@@ -913,7 +913,7 @@ var nodes = [
     {id: "JUnit" },
     {id: "Tomcat" },
     {id: "C" },
-    {id: "C++" },
+    {id: "Cpp", html: "C++" },
     {id: "OpenGL" },
     {id: "Mockito" },
     {id: "Dagger" },
@@ -997,7 +997,7 @@ var links = [
     {source: Java, target: "iText"},
     {source: Java, target: "JAXB"},
     {source: "JAXB", target: "XMLSchema"},
-    {source: "C", target: "C++"},
+    {source: "C", target: "Cpp"},
     {source: "C", target: "OpenGL"},
     {source: "C", target: Android, thick: 0},
     {source: Android, target: "Dagger"},
@@ -1054,6 +1054,7 @@ const radiusFunc = function(d) {
     return d.sizeMult ? d.sizeMult * defaultRadius : defaultRadius
 };
 var nodeCircle = nodeG1.append("circle")
+      .attr("class", function(d) { d.id + '_background'} )
       .attr("r", radiusFunc )
                 .attr("id2", function(d) { return d.id } )
                 .attr("id", function(d) { return d.id } )
@@ -1080,8 +1081,9 @@ nodeG1.append("g").html(function(d) {
 });
 const border=0;
 nodeG1.append("foreignObject")
-        .attr("style", "border: " + border + "px solid green")
+        .attr("style", "pointer-events:none; border: " + border + "px solid green")
         .attr("width", foW)
+        .attr("height", foH)
         .attr("height", foH)
         .attr("x", -foW/2)
         .attr("y", -foH/2)
@@ -1107,15 +1109,20 @@ var nodeCircle2 = nodeG1.append("circle")
         .attr("fill", d3.rgb(180,180,180, 0))
         .on("mouseover", function(d) {
 //            $('tech').hover(function() {
-            $('.'+d.id).css('background-color','rgba(0, 0, 0, 0.6)');
+            $('.'+d.id ).css('background-color','rgba(0, 0, 0, 0.6)');
+            $('.'+d.id + '_background').css('background-color','rgba(0, 0, 0, 0.6)');
+            $('#'+d.id).css({ fill: "#ff0000" });
 //            $("[id2='"+ d.id + "']").css('background-color','rgba(0, 0, 0, 0.6)');
-            d3.select(this).attr("r", 10).style("fill", "red");
-            $("#"+d.id).css('background-color','rgba(0, 0, 0, 0.6)');
-//        window.alert('You clicked .class-name');
+//            d3.select(this).style("fill", "red");
+            $("."+d.id + '_background').css('background-color','rgba(0, 0, 0, 0.6)');
+//        window.alert('mouserover: ' + d.id);
+            d3.select(this).style("fill", "#fff8ee00");
         })
         .on("mouseout", function(d) {
+            $('#'+d.id).css({ fill: "#00FF00" });
             $('.'+d.id).css('background-color','rgba(200, 200, 200, 0.6)');
-            d3.select(this).attr("r", 5.5).style("fill", "#fff8ee");
+            $('.'+d.id+'_background').css('background-color','rgba(200, 200, 200, 0.6)');
+            d3.select(this).style("fill", "#fff8ee80");
         })
         .call(d3.drag()
                 .on("start", dragstarted)
