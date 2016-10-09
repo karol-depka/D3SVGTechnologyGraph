@@ -46,11 +46,14 @@ tech:hover {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script>
 
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
+var svgReal = d3.select("svg"),
+    width = +svgReal.attr("width"),
+    height = +svgReal.attr("height");
 
-svg.call(d3.zoom().on("zoom", function () {
+var svg = svgReal.append("g"); /* actually a <g>, to fix transform not working in <svg> on chrome:
+        http://stackoverflow.com/questions/27283610/d3-workaround-for-svg-transform-in-chrome */
+
+svgReal.call(d3.zoom().on("zoom", function () {
     svg.attr("transform", d3.event.transform)
 }));
 
