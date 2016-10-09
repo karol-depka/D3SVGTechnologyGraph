@@ -1055,14 +1055,12 @@ var nodeCircle = nodeG1.append("circle")
                 .attr("id", function(d) { return d.id } )
 
                 .attr("fill", function(d) { return color; })
-                .attr("title", "TEST")
+//                .attr("title", "TEST")
         ;
 
 
 
-  nodeCircle.append("title")
-      .text(function(d) { return d.id; });
-    
+
     nodeG1.append("g").html(function(d) {
         const defaultSize = 30;
         var size = d.sizeMult ? d.sizeMult * defaultSize : defaultSize;
@@ -1096,6 +1094,13 @@ var nodeCircle2 = nodeG1.append("circle")
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
+
+const titleFunc = function(d) { return d.id; };
+nodeCircle.append("title")
+        .text(titleFunc);
+nodeCircle2.append("title")
+        .text(titleFunc);
+
 
 //    // create a subselection, wiring up data, using a function to define 
 //    //how it's suppossed to know what is appended/updated/exited
