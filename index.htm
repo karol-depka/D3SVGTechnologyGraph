@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+
 <style>
 
 .links line {
@@ -12,9 +13,23 @@
   stroke-width: 1.5px;
 }
 
-.circleHover {
+/*         .attr("fill", d3.rgb(180,180,180, 0)) */
+/*.attr("style", "stroke-width: 1.5px;")*/
+
+
+.techCircle {
+
+    fill: #f00;
     stroke: #fff;
     stroke-width: 1.5px;
+    transition: all 0.2s ease-in;
+}
+
+.techCircleHover {
+    stroke: #fff;
+    fill: #aaa;
+    stroke-width: 1.5px;
+    transition: all 0.2s ease-in;
 }
 
 tech {
@@ -27,6 +42,14 @@ tech {
     height: 2000px;
     transition: all 0.2s ease-in;
 
+}
+
+.techCircleOverlay {
+
+    fill: #00000000;
+    fill-opacity: 0.0;
+    stroke: #fff;
+    stroke-width: 0px;
 }
 
 /*@keyframes tech {*/
@@ -46,7 +69,7 @@ tech:hover {
 }
 
 </style>
-<svg width="960" height="600"></svg>
+<svg width="960" height="400"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script>
@@ -1078,7 +1101,7 @@ const radiusFunc = function(d) {
     return d.sizeMult ? d.sizeMult * defaultRadius : defaultRadius
 };
 var nodeCircle = nodeG1.append("circle")
-      .attr("class", function(d) { d.id + '_background' + ' circleBg'} )
+      .attr("class", function(d) { d.id + '_background' + ' circleBg' + ' techCircle'} )
       .attr("r", radiusFunc )
                 .attr("id2", function(d) { return d.id } )
                 .attr("id", function(d) { return d.id } )
@@ -1130,24 +1153,26 @@ nodeG1.append("foreignObject")
 
 var nodeCircle2 = nodeG1.append("circle")
         .attr("r", radiusFunc)
-        .attr("fill", d3.rgb(180,180,180, 0))
-        .attr("style", "stroke-width: 1.5px;")
+        .classed("techCircleOverlay", true)
         .on("mouseover", function(d) {
 //            $('tech').hover(function() {
             $('.'+d.id ).css('background-color','rgba(0, 0, 0, 0.6)');
             $('.'+d.id + '_background').css('background-color','rgba(0, 0, 0, 0.6)');
-            $('#'+d.id).css({ fill: "#ff0000" });
+            $('#'+d.id).addClass("techCircleHover");
 //            $("[id2='"+ d.id + "']").css('background-color','rgba(0, 0, 0, 0.6)');
 //            d3.select(this).style("fill", "red");
             $("."+d.id + '_background').css('background-color','rgba(0, 0, 0, 0.6)');
 //        window.alert('mouserover: ' + d.id);
-            d3.select(this).style("fill", "#fff8ee00");
+//            d3.select(this).style("fill", "#fff8ee00");
+            d3.select(this).classed("techCircleHover", true); //"#fff8ee00"
         })
         .on("mouseout", function(d) {
-            $('#'+d.id).css({ fill: "#00FF00" });
+            $('#'+d.id).removeClass("techCircleHover", false);
+//            $('#'+d.id).css({ fill: "#00FF00" });
             $('.'+d.id).css('background-color','rgba(200, 200, 200, 0.6)');
             $('.'+d.id+'_background').css('background-color','rgba(200, 200, 200, 0.6)');
-            d3.select(this).style("fill", "#fff8ee80");
+//            d3.select(this).style("fill", "#fff8ee80");
+            d3.select(this).classed("techCircleHover", false); //"#fff8ee00"
         })
         .call(d3.drag()
                 .on("start", dragstarted)
