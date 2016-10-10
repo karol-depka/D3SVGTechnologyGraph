@@ -1,5 +1,362 @@
 <!DOCTYPE html>
+<html>
 <meta charset="utf-8">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
+
+<script>
+    'use strict';
+
+    (function() {
+
+        var global = this
+                , addEventListener = 'addEventListener'
+                , removeEventListener = 'removeEventListener'
+                , getBoundingClientRect = 'getBoundingClientRect'
+                , isIE8 = global.attachEvent && !global[addEventListener]
+                , document = global.document
+
+                , calc = (function () {
+            var el
+                    , prefixes = ["", "-webkit-", "-moz-", "-o-"]
+
+            for (var i = 0; i < prefixes.length; i++) {
+                el = document.createElement('div')
+                el.style.cssText = "width:" + prefixes[i] + "calc(9px)"
+
+                if (el.style.length) {
+                    return prefixes[i] + "calc"
+                }
+            }
+        })()
+                , elementOrSelector = function (el) {
+            if (typeof el === 'string' || el instanceof String) {
+                return document.querySelector(el)
+            } else {
+                return el
+            }
+        }
+
+                , Split = function (ids, options) {
+            var dimension
+                    , i
+                    , clientDimension
+                    , clientAxis
+                    , position
+                    , gutterClass
+                    , paddingA
+                    , paddingB
+                    , pairs = []
+
+            // Set defaults
+
+            options = typeof options !== 'undefined' ?  options : {}
+
+            if (typeof options.gutterSize === 'undefined') options.gutterSize = 10
+            if (typeof options.minSize === 'undefined') options.minSize = 100
+            if (typeof options.snapOffset === 'undefined') options.snapOffset = 30
+            if (typeof options.direction === 'undefined') options.direction = 'horizontal'
+
+            if (options.direction == 'horizontal') {
+                dimension = 'width'
+                clientDimension = 'clientWidth'
+                clientAxis = 'clientX'
+                position = 'left'
+                gutterClass = 'gutter gutter-horizontal'
+                paddingA = 'paddingLeft'
+                paddingB = 'paddingRight'
+                if (!options.cursor) options.cursor = 'ew-resize'
+            } else if (options.direction == 'vertical') {
+                dimension = 'height'
+                clientDimension = 'clientHeight'
+                clientAxis = 'clientY'
+                position = 'top'
+                gutterClass = 'gutter gutter-vertical'
+                paddingA = 'paddingTop'
+                paddingB = 'paddingBottom'
+                if (!options.cursor) options.cursor = 'ns-resize'
+            }
+
+            // Event listeners for drag events, bound to a pair object.
+            // Calculate the pair's position and size when dragging starts.
+            // Prevent selection on start and re-enable it when done.
+
+            var startDragging = function (e) {
+                var self = this
+                        , a = self.a
+                        , b = self.b
+
+                if (!self.dragging && options.onDragStart) {
+                    options.onDragStart()
+                }
+
+                e.preventDefault()
+
+                self.dragging = true
+                self.move = drag.bind(self)
+                self.stop = stopDragging.bind(self)
+
+                global[addEventListener]('mouseup', self.stop)
+                global[addEventListener]('touchend', self.stop)
+                global[addEventListener]('touchcancel', self.stop)
+
+                self.parent[addEventListener]('mousemove', self.move)
+                self.parent[addEventListener]('touchmove', self.move)
+
+                a[addEventListener]('selectstart', preventSelection)
+                a[addEventListener]('dragstart', preventSelection)
+                b[addEventListener]('selectstart', preventSelection)
+                b[addEventListener]('dragstart', preventSelection)
+
+                a.style.userSelect = 'none'
+                a.style.webkitUserSelect = 'none'
+                a.style.MozUserSelect = 'none'
+                a.style.pointerEvents = 'none'
+
+                b.style.userSelect = 'none'
+                b.style.webkitUserSelect = 'none'
+                b.style.MozUserSelect = 'none'
+                b.style.pointerEvents = 'none'
+
+                self.gutter.style.cursor = options.cursor
+                self.parent.style.cursor = options.cursor
+
+                calculateSizes.call(self)
+            }
+                    , stopDragging = function () {
+                var self = this
+                        , a = self.a
+                        , b = self.b
+
+                if (self.dragging && options.onDragEnd) {
+                    options.onDragEnd()
+                }
+
+                self.dragging = false
+
+                global[removeEventListener]('mouseup', self.stop)
+                global[removeEventListener]('touchend', self.stop)
+                global[removeEventListener]('touchcancel', self.stop)
+
+                self.parent[removeEventListener]('mousemove', self.move)
+                self.parent[removeEventListener]('touchmove', self.move)
+
+                delete self.stop
+                delete self.move
+
+                a[removeEventListener]('selectstart', preventSelection)
+                a[removeEventListener]('dragstart', preventSelection)
+                b[removeEventListener]('selectstart', preventSelection)
+                b[removeEventListener]('dragstart', preventSelection)
+
+                a.style.userSelect = ''
+                a.style.webkitUserSelect = ''
+                a.style.MozUserSelect = ''
+                a.style.pointerEvents = ''
+
+                b.style.userSelect = ''
+                b.style.webkitUserSelect = ''
+                b.style.MozUserSelect = ''
+                b.style.pointerEvents = ''
+
+                self.gutter.style.cursor = ''
+                self.parent.style.cursor = ''
+            }
+                    , drag = function (e) {
+                var offset
+
+                if (!this.dragging) return
+
+                // Get the relative position of the event from the first side of the
+                // pair.
+
+                if ('touches' in e) {
+                    offset = e.touches[0][clientAxis] - this.start
+                } else {
+                    offset = e[clientAxis] - this.start
+                }
+
+                // If within snapOffset of min or max, set offset to min or max
+
+                if (offset <=  this.aMin + options.snapOffset) {
+                    offset = this.aMin
+                } else if (offset >= this.size - this.bMin - options.snapOffset) {
+                    offset = this.size - this.bMin
+                }
+
+                adjust.call(this, offset)
+
+                if (options.onDrag) {
+                    options.onDrag()
+                }
+            }
+                    , calculateSizes = function () {
+                // Calculate the pairs size, and percentage of the parent size
+                var computedStyle = global.getComputedStyle(this.parent)
+                        , parentSize = this.parent[clientDimension] - parseFloat(computedStyle[paddingA]) - parseFloat(computedStyle[paddingB])
+
+                this.size = this.a[getBoundingClientRect]()[dimension] + this.b[getBoundingClientRect]()[dimension] + this.aGutterSize + this.bGutterSize
+                this.percentage = Math.min(this.size / parentSize * 100, 100)
+                this.start = this.a[getBoundingClientRect]()[position]
+            }
+                    , adjust = function (offset) {
+                // A size is the same as offset. B size is total size - A size.
+                // Both sizes are calculated from the initial parent percentage.
+
+                this.a.style[dimension] = calc + '(' + (offset / this.size * this.percentage) + '% - ' + this.aGutterSize + 'px)'
+                this.b.style[dimension] = calc + '(' + (this.percentage - (offset / this.size * this.percentage)) + '% - ' + this.bGutterSize + 'px)'
+            }
+                    , fitMin = function () {
+                var self = this
+                        , a = self.a
+                        , b = self.b
+
+                if (a[getBoundingClientRect]()[dimension] < self.aMin) {
+                    a.style[dimension] = (self.aMin - self.aGutterSize) + 'px'
+                    b.style[dimension] = (self.size - self.aMin - self.aGutterSize) + 'px'
+                } else if (b[getBoundingClientRect]()[dimension] < self.bMin) {
+                    a.style[dimension] = (self.size - self.bMin - self.bGutterSize) + 'px'
+                    b.style[dimension] = (self.bMin - self.bGutterSize) + 'px'
+                }
+            }
+                    , fitMinReverse = function () {
+                var self = this
+                        , a = self.a
+                        , b = self.b
+
+                if (b[getBoundingClientRect]()[dimension] < self.bMin) {
+                    a.style[dimension] = (self.size - self.bMin - self.bGutterSize) + 'px'
+                    b.style[dimension] = (self.bMin - self.bGutterSize) + 'px'
+                } else if (a[getBoundingClientRect]()[dimension] < self.aMin) {
+                    a.style[dimension] = (self.aMin - self.aGutterSize) + 'px'
+                    b.style[dimension] = (self.size - self.aMin - self.aGutterSize) + 'px'
+                }
+            }
+                    , balancePairs = function (pairs) {
+                for (var i = 0; i < pairs.length; i++) {
+                    calculateSizes.call(pairs[i])
+                    fitMin.call(pairs[i])
+                }
+
+                for (i = pairs.length - 1; i >= 0; i--) {
+                    calculateSizes.call(pairs[i])
+                    fitMinReverse.call(pairs[i])
+                }
+            }
+                    , preventSelection = function () { return false }
+                    , parent = elementOrSelector(ids[0]).parentNode
+
+            if (!options.sizes) {
+                var percent = 100 / ids.length
+
+                options.sizes = []
+
+                for (i = 0; i < ids.length; i++) {
+                    options.sizes.push(percent)
+                }
+            }
+
+            if (!Array.isArray(options.minSize)) {
+                var minSizes = []
+
+                for (i = 0; i < ids.length; i++) {
+                    minSizes.push(options.minSize)
+                }
+
+                options.minSize = minSizes
+            }
+
+            for (i = 0; i < ids.length; i++) {
+                var el = elementOrSelector(ids[i])
+                        , isFirst = (i == 1)
+                        , isLast = (i == ids.length - 1)
+                        , size
+                        , gutterSize = options.gutterSize
+                        , pair
+
+                if (i > 0) {
+                    pair = {
+                        a: elementOrSelector(ids[i - 1]),
+                        b: el,
+                        aMin: options.minSize[i - 1],
+                        bMin: options.minSize[i],
+                        dragging: false,
+                        parent: parent,
+                        isFirst: isFirst,
+                        isLast: isLast,
+                        direction: options.direction
+                    }
+
+                    // For first and last pairs, first and last gutter width is half.
+
+                    pair.aGutterSize = options.gutterSize
+                    pair.bGutterSize = options.gutterSize
+
+                    if (isFirst) {
+                        pair.aGutterSize = options.gutterSize / 2
+                    }
+
+                    if (isLast) {
+                        pair.bGutterSize = options.gutterSize / 2
+                    }
+                }
+
+                // IE9 and above
+                if (!isIE8) {
+                    if (i > 0) {
+                        var gutter = document.createElement('div')
+
+                        gutter.className = gutterClass
+                        gutter.style[dimension] = options.gutterSize + 'px'
+
+                        gutter[addEventListener]('mousedown', startDragging.bind(pair))
+                        gutter[addEventListener]('touchstart', startDragging.bind(pair))
+
+                        parent.insertBefore(gutter, el)
+
+                        pair.gutter = gutter
+                    }
+
+                    if (i === 0 || i == ids.length - 1) {
+                        gutterSize = options.gutterSize / 2
+                    }
+
+                    if (typeof options.sizes[i] === 'string' || options.sizes[i] instanceof String) {
+                        size = options.sizes[i]
+                    } else {
+                        size = calc + '(' + options.sizes[i] + '% - ' + gutterSize + 'px)'
+                    }
+
+                    // IE8 and below
+                } else {
+                    if (typeof options.sizes[i] === 'string' || options.sizes[i] instanceof String) {
+                        size = options.sizes[i]
+                    } else {
+                        size = options.sizes[i] + '%'
+                    }
+                }
+
+                el.style[dimension] = size
+
+                if (i > 0) {
+                    pairs.push(pair)
+                }
+            }
+
+            balancePairs(pairs)
+        }
+
+        if (typeof exports !== 'undefined') {
+            if (typeof module !== 'undefined' && module.exports) {
+                exports = module.exports = Split
+            }
+            exports.Split = Split
+        } else {
+            global.Split = Split
+        }
+
+    }).call(window);
+</script>
 
 <style>
 
@@ -69,7 +426,7 @@ tech:hover {
 }
 
 </style>
-<svg width="960" height="400"></svg>
+<svg width="960" height="400" id="techSvg"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script>
@@ -1256,43 +1613,100 @@ function dragended(d) {
 }
 
 </script>
+<style>
 
-<div style="margin: 0 auto; vertical-align: middle;">
-    <h1>Experience</h1>
+    html, body {
+        height: 100%;
+    }
+    body {
+        padding: 8px;
+        background-color: #F6F6F6;
+        box-sizing: border-box;
+    }
+
+    split {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .content {
+        border: 1px solid #C0C0C0;
+        box-shadow: inset 0 1px 2px #e4e4e4;
+        background-color: #fff;
+    }
+    .gutter {
+        background-color: transparent;
+        background-repeat: no-repeat;
+        background-position: 50%;
+    }
+    .gutter.gutter-horizontal {
+        cursor: col-resize;
+        background-image: url('data:image/png;base64,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');
+    }
+    .gutter.gutter-vertical {
+        cursor: row-resize;
+        background-image: url('data:image/png;base64,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');
+    }
+    .split.split-horizontal, .gutter.gutter-horizontal {
+        height: 100%;
+        float: left;
+    }
+</style>
+<!--<body>-->
+<div class="split split-vertical" style="height: 100%">
+
+    <div id="techSvg1" class="split content">TEST</div>
+    <div id="techBody" class="split content">
+        <div style="margin: 0 auto; vertical-align: middle;">
+            <h1>Experience</h1>
 
 
-<p alignment-baseline="middle" style="vertical-align: middle;">Using <tech>Maven</tech>, <tech><svg alignment-baseline="hanging" style="" x="-22" y="-22" width="25px" height="25px" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
-    <g>
-        <path d="M105.609463,45.7403268 L177.767595,45.7403268 L214.168405,108.789043 L255.737027,108.789043 C246.273992,47.34207 193.17242,0.290863813 129.076794,0.290863813 C112.867113,0.290863813 97.3746304,3.32999222 83.099393,8.82054475 L105.609463,45.7403268" fill="#006533"></path>
-        <path d="M216.097868,146.762708 L177.767595,213.15337 L81.1121556,213.15337 L32.7849339,129.447346 L71.3951128,62.5715798 L50.0634397,27.584249 C20.1532763,51.0465992 0.913431907,87.4922335 0.913431907,128.454226 C0.913431907,199.236732 58.2942879,256.617588 129.076794,256.617588 C193.640591,256.617588 247.030039,208.869105 255.917323,146.762708 L216.097868,146.762708" fill="#82B816"></path>
-        <path d="M174.510319,128.114553 C174.510319,153.394802 154.01737,173.887751 128.737121,173.887751 C103.457868,173.887751 82.9649183,153.394802 82.9649183,128.114553 C82.9649183,102.8353 103.457868,82.3423502 128.737121,82.3423502 C154.01737,82.3423502 174.510319,102.8353 174.510319,128.114553" fill="#006532"></path>
-    </g>
-</svg>&nbsp;Gradle</tech>
-    </p>
-    <p>Using <tech class=Maven>Maven</tech>, <tech class=Gradle><svg style="" x="-22" dy="-100" width="12px" height="12px" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
-        <g>
-            <path d="M105.609463,45.7403268 L177.767595,45.7403268 L214.168405,108.789043 L255.737027,108.789043 C246.273992,47.34207 193.17242,0.290863813 129.076794,0.290863813 C112.867113,0.290863813 97.3746304,3.32999222 83.099393,8.82054475 L105.609463,45.7403268" fill="#006533"></path>
-            <path d="M216.097868,146.762708 L177.767595,213.15337 L81.1121556,213.15337 L32.7849339,129.447346 L71.3951128,62.5715798 L50.0634397,27.584249 C20.1532763,51.0465992 0.913431907,87.4922335 0.913431907,128.454226 C0.913431907,199.236732 58.2942879,256.617588 129.076794,256.617588 C193.640591,256.617588 247.030039,208.869105 255.917323,146.762708 L216.097868,146.762708" fill="#82B816"></path>
-            <path d="M174.510319,128.114553 C174.510319,153.394802 154.01737,173.887751 128.737121,173.887751 C103.457868,173.887751 82.9649183,153.394802 82.9649183,128.114553 C82.9649183,102.8353 103.457868,82.3423502 128.737121,82.3423502 C154.01737,82.3423502 174.510319,102.8353 174.510319,128.114553" fill="#006532"></path>
-        </g>
-    </svg>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Java>Java</tech>
-    </p>
+            <p alignment-baseline="middle" style="vertical-align: middle;">Using <tech>Maven</tech>, <tech><svg alignment-baseline="hanging" style="" x="-22" y="-22" width="25px" height="25px" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
+                <g>
+                    <path d="M105.609463,45.7403268 L177.767595,45.7403268 L214.168405,108.789043 L255.737027,108.789043 C246.273992,47.34207 193.17242,0.290863813 129.076794,0.290863813 C112.867113,0.290863813 97.3746304,3.32999222 83.099393,8.82054475 L105.609463,45.7403268" fill="#006533"></path>
+                    <path d="M216.097868,146.762708 L177.767595,213.15337 L81.1121556,213.15337 L32.7849339,129.447346 L71.3951128,62.5715798 L50.0634397,27.584249 C20.1532763,51.0465992 0.913431907,87.4922335 0.913431907,128.454226 C0.913431907,199.236732 58.2942879,256.617588 129.076794,256.617588 C193.640591,256.617588 247.030039,208.869105 255.917323,146.762708 L216.097868,146.762708" fill="#82B816"></path>
+                    <path d="M174.510319,128.114553 C174.510319,153.394802 154.01737,173.887751 128.737121,173.887751 C103.457868,173.887751 82.9649183,153.394802 82.9649183,128.114553 C82.9649183,102.8353 103.457868,82.3423502 128.737121,82.3423502 C154.01737,82.3423502 174.510319,102.8353 174.510319,128.114553" fill="#006532"></path>
+                </g>
+            </svg>&nbsp;Gradle</tech>
+            </p>
+            <p>Using <tech class=Maven>Maven</tech>, <tech class=Gradle><svg style="" x="-22" dy="-100" width="12px" height="12px" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
+                <g>
+                    <path d="M105.609463,45.7403268 L177.767595,45.7403268 L214.168405,108.789043 L255.737027,108.789043 C246.273992,47.34207 193.17242,0.290863813 129.076794,0.290863813 C112.867113,0.290863813 97.3746304,3.32999222 83.099393,8.82054475 L105.609463,45.7403268" fill="#006533"></path>
+                    <path d="M216.097868,146.762708 L177.767595,213.15337 L81.1121556,213.15337 L32.7849339,129.447346 L71.3951128,62.5715798 L50.0634397,27.584249 C20.1532763,51.0465992 0.913431907,87.4922335 0.913431907,128.454226 C0.913431907,199.236732 58.2942879,256.617588 129.076794,256.617588 C193.640591,256.617588 247.030039,208.869105 255.917323,146.762708 L216.097868,146.762708" fill="#82B816"></path>
+                    <path d="M174.510319,128.114553 C174.510319,153.394802 154.01737,173.887751 128.737121,173.887751 C103.457868,173.887751 82.9649183,153.394802 82.9649183,128.114553 C82.9649183,102.8353 103.457868,82.3423502 128.737121,82.3423502 C154.01737,82.3423502 174.510319,102.8353 174.510319,128.114553" fill="#006532"></path>
+                </g>
+            </svg>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Java>Java</tech>
+            </p>
+        </div>
+
+        <h2>Oblong Industries</h2>
+        <tech class=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Java>Java</tech>. Writing tests using <tech class=Groovy>Groovy</tech>.
+        Migrated from ListView to <tech class=RecyclerView>RecyclerView</tech>
+        <h2>CollabNet Inc.</h2>
+        <tech class=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech>
+        <h2>o2.pl</h2>
+        <tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech> <tech class=Python>Python</tech>
+        <h2>Computer Science degree</h2>
+        Learnt technologies like <tech class=MySQL>MySQL</tech>
+
     </div>
+</div>
 
-<h2>Oblong Industries</h2>
-<tech class=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Java>Java</tech>. Writing tests using <tech class=Groovy>Groovy</tech>.
-Migrated from ListView to <tech class=RecyclerView>RecyclerView</tech>
-<h2>CollabNet Inc.</h2>
-<tech class=Gradle>&nbsp;Gradle</tech> <tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech>
-<h2>o2.pl</h2>
-<tech class=Android>Android</tech> <tech class=Linux>Linux</tech> <tech class=HTML5>HTML 5</tech> <tech class=Python>Python</tech>
-<h2>Computer Science degree</h2>
-Learnt technologies like <tech class=MySQL>MySQL</tech>
+<!--</body>-->
 
 <script>
+    Split(['#techSvg1', '#techBody'], {
+        gutterSize: 8,
+        cursor: 'row-resize',
+        direction: 'vertical',
+    });
     $('tech').hover(function() {
 //            $('#Maven').css('background-color','rgba(0, 0, 0, 0.6)');
 //        window.alert('You clicked .class-name');
     });
 
 </script>
+
+</html>
