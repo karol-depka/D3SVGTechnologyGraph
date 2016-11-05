@@ -4,8 +4,11 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css">
 
+
 <script>
     'use strict';
+
+    /* ========== Splitter ========== */
 
     (function() {
 
@@ -356,6 +359,8 @@
         }
 
     }).call(window);
+
+    /* ========== End Splitter ========== */
 </script>
 
 <style>
@@ -1392,7 +1397,8 @@ var nodes = [
     {id: Selendroid },
     {id: JCIP },
     {id: Gerrit },
-    {id: FakeRuby },
+    {id: Lua },
+//    {id: FakeRuby },
         // TODO: RxJava
 ];
 
@@ -1401,6 +1407,7 @@ var links = [
     {source: Java, target: Android},
     {source: Java, target: Kotlin, distance:1.3},
     {source: Java, target: "Groovy"},
+    {source: Ruby, target: "Groovy", thick: 0},
     {source: Java, target: "Maven"},
     {source: Java, target: "Hibernate"},
 //    {source: Java, target: "JUnit"},
@@ -1412,9 +1419,10 @@ var links = [
     {source: Android, target: "GooglePlay", distance: 1.7},
     {source: Android, target: "Ionic"},
     {source: Android, target: CalabashAndroid},
+    {source: Selendroid, target: CalabashAndroid},
     {source: CalabashAndroid, target: Ruby, distance: 0.0001},
 //    {source: CalabashAndroid, target: FakeRuby, distance: 1, strengthMul: 10},
-    {source: CalabashAndroid, target: FakeRuby, distance: 1},
+//    {source: CalabashAndroid, target: FakeRuby, distance: 1},
     {source: Android, target: "Firebase"},
     {source: Angular2, target: "Firebase"},
     {source: "Cordova", target: "iOS"},
@@ -1442,7 +1450,7 @@ var links = [
     {source: Git, target: Linux, thick: 0},
     {source: Git, target: "Subversion", distance: 0.3, thick: 0},
     {source: Python, target: Ruby, distance: 0.3, thick: 0},
-    {source: Python, target: FakeRuby, distance: 0.3},
+//    {source: Python, target: FakeRuby, distance: 0.3},
     {source: "D3", target: SVG, distance: 0.5},
     {source: Java, target: "GWT"},
     {source: "Swing", target: "JGraph"},
@@ -1454,8 +1462,8 @@ var links = [
     {source: Java, target: "JUnit"},
     {source: Java, target: "iText"},
     {source: Java, target: "JAXB"},
-    {source: "JAXB", target: "XMLSchema"},
-    {source: XML, target: "XMLSchema"},
+    {source: "JAXB", target: "XMLSchema", distance: 0.1},
+    {source: XML, target: "XMLSchema", distance: 0.1},
     {source: "C", target: "Cpp"},
     {source: "C", target: "OpenGL"},
     {source: "C", target: Linux, thick: 0},
@@ -1475,6 +1483,9 @@ var links = [
     {source: SOAP, target: XML},
     {source: Java, target: JCIP},
     {source: Git, target: Gerrit},
+    {source: Python, target: "Groovy", thick: 0},
+    {source: Lua, target: Ruby, thick: 0},
+    {source: "SOAP", target: "Grinder", thick: 0},
 ];
 
 var graph = { nodes: nodes, links: links  };
@@ -1643,7 +1654,9 @@ nodeCircle2.append("title")
 //    nodeG1
 //        .attr("x", function(d) { return d.x; })
 //        .attr("y", function(d) { return d.y; });
-      nodeG1.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+      nodeG1.attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+      });
   }
 //     nodeG1.attr("transform", function (d) {
 //        return "translate(" + d.x + "," + d.y + ")";
@@ -1651,7 +1664,9 @@ nodeCircle2.append("title")
 //});
 
 function dragstarted(d) {
-  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  if (!d3.event.active) {
+      simulation.alphaTarget(0.3).restart();
+  }
   d.fx = d.x;
   d.fy = d.y;
 }
@@ -1662,7 +1677,9 @@ function dragged(d) {
 }
 
 function dragended(d) {
-  if (!d3.event.active) simulation.alphaTarget(0);
+  if (!d3.event.active) {
+      simulation.alphaTarget(0);
+  }
   d.fx = null;
   d.fy = null;
 }
