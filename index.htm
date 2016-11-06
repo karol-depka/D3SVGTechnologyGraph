@@ -381,8 +381,9 @@
 
 .techCircle {
 
-    fill: #f00;
+    fill: #000;
     stroke: #fff;
+    fill-opacity: 0.2;
     stroke-width: 1.5px;
     transition: all 0.2s ease-in;
 }
@@ -408,13 +409,22 @@ tech {
     box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.63);
 }
 
-.techCircleOverlay {
+.techCircleOverlay, .techCircleMouseOver {
 
-    fill: #00000000;
+    fill: #f00;
     fill-opacity: 0.0;
     stroke: #fff;
     stroke-width: 0px;
 }
+
+ /*{*/
+
+    /*fill: #f00;*/
+    /*fill-opacity: 0.2;*/
+    /*stroke: #fff;*/
+    /*stroke-width: 0px;*/
+/*}*/
+
 
 /*@keyframes tech {*/
     /*0% { transform: scale(1); }*/
@@ -1751,14 +1761,17 @@ var link = svg.append("g")
 //      .attr("stroke-width", 2)
       .attr("stroke-width", function(d) { return Math.sqrt(d.thick == null ? 1 : d.thick ); });
 
-var nodeG = svg.append("g")
+var nodeG = svg.append("g") /* Group that contains all nodes */
       .attr("class", "nodes")
     .selectAll(".node")
     .data(graph.nodes)
     .enter();
 
-    var nodeG1 = nodeG.append("g")
+    var nodeG1 = nodeG.append("g") /* top-level group of a node which will include the circle */
         .attr("class", "node");
+
+nodeG.selectAll(".techCircleOverlay")
+        .data(graph.nodes)
 
 simulation
         .nodes(graph.nodes)
@@ -1776,6 +1789,10 @@ const defaultRadius = 23;
 const radiusFunc = function(d) {
     return d.sizeMult ? d.sizeMult * defaultRadius : defaultRadius
 };
+
+const radiusFuncRect = function(d) {
+    return radiusFunc(d) * 2;
+}
 var nodeCircle = nodeG1.append("circle")
       .attr("class", function(d) { d.id + '_background' + ' circleBg' + ' techCircle'} )
       .attr("r", radiusFunc )
@@ -1827,9 +1844,34 @@ nodeG1.append("foreignObject")
 //            return '<text>' +  d.body + '</text>';
         });
 
-var nodeCircle2 = nodeG1.append("circle")
-        .attr("r", radiusFunc)
+var nodeCircleMouseOver = nodeG1  /* need to set position separately in root, because of jerky movement issue with drag&drop and "translate(...)" transform */
+        .append("rect")
+        //        .attr("r", radiusFunc)
+        .attr("width", radiusFuncRect*3)
+        .attr("height", radiusFuncRect*3)
+        //        .attr("x", 0)
+                .attr("x", -defaultRadius)
+        //        .attr("y", 0)
+                .attr("y", -defaultRadius)
+//        .classed("techCircleOverlay", true)
+        .classed("techCircleMouseOver", true)
+//        .call(d3.drag()
+//                .on("start", dragstarted)
+//                .on("drag", dragged)
+//                .on("end", dragended));
+var nodeCircleOverlay = nodeG  /* need to set position separately in root, because of jerky movement issue with drag&drop and "translate(...)" transform */
+        .append("rect")
+//        .attr("r", radiusFunc)
+        .attr("width", radiusFuncRect)
+        .attr("height", radiusFuncRect)
+        .attr("rx", radiusFunc)
+        .attr("ry", radiusFunc)
+//        .attr("x", 0)
+//        .attr("x", -defaultRadius)
+//        .attr("y", 0)
+//        .attr("y", -defaultRadius)
         .classed("techCircleOverlay", true)
+
         .on("mouseover", function(d) {
 //            $('tech').hover(function() {
             $('.'+d.id ).css('background-color','rgba(0, 0, 0, 0.6)');
@@ -1850,6 +1892,7 @@ var nodeCircle2 = nodeG1.append("circle")
 //            d3.select(this).style("fill", "#fff8ee80");
             d3.select(this).classed("techCircleHover", false); //"#fff8ee00"
         })
+
         .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -1858,7 +1901,7 @@ var nodeCircle2 = nodeG1.append("circle")
 const titleFunc = function(d) { return d.id; };
 nodeCircle.append("title")
         .text(titleFunc);
-nodeCircle2.append("title")
+nodeCircleOverlay.append("title")
         .text(titleFunc);
 
 
@@ -1904,11 +1947,20 @@ nodeCircle2.append("title")
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
 
-//    nodeG1
+    nodeG1
+//      nodeCircle2
 //        .attr("x", function(d) { return d.x; })
 //        .attr("y", function(d) { return d.y; });
+        .attr("x", function(d) { return (d.x - radiusFunc(d) ); })
+        .attr("y", function(d) { return (d.y - radiusFunc(d) ); });
+      nodeCircleOverlay /* need to set position separately, because of issue with drag&drop and "translate(...)" transform */
+              .attr("x", function(d) { return (d.fx || d.x) - radiusFunc(d); })
+              .attr("y", function(d) { return (d.fy || d.y) - radiusFunc(d); });
+//              .attr("cx", function(d) { return (d.x ); })
+//              .attr("cy", function(d) { return (d.y ); });
       nodeG1.attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
+//          return "translate(" + (d.x + radiusFunc(d) / 2) + "," + (d.y + radiusFunc(d) / 2) + ")";
+          return "translate(" + (d.x) + "," + (d.y) + ")";
       });
   }
 //     nodeG1.attr("transform", function (d) {
