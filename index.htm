@@ -499,6 +499,7 @@ svgReal.call(d3.zoom().on("zoom", function () {
 //var color = d3.scaleOrdinal(d3.schemeCategory20);
 var color = d3.rgb(230,230,230, 128);
 
+// Example: Force-Directed Graph: https://bl.ocks.org/mbostock/4062045
 var simulation = d3.forceSimulation()
 //        .force("gravity", 3)
     .force("link",
@@ -1705,6 +1706,7 @@ var nodesWebOnly = [
     nodes.LESS,
     nodes.NodeJS,
     nodes.NPM,
+    /* Bower, Grunt, JSLint */
 ]
 var linksWebOnly = [
     {source: HTML5, target: Angular2},
