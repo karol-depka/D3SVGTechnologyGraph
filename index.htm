@@ -509,23 +509,25 @@ svgRootElement.call(d3.zoom().on("zoom", function () {
 //var color = d3.scaleOrdinal(d3.schemeCategory20);
 var color = d3.rgb(230,230,230, 128);
 
-// Example: Force-Directed Graph: https://bl.ocks.org/mbostock/4062045
+/* Base Example:
+   Force-Directed Graph: https://bl.ocks.org/mbostock/4062045 */
 var simulation = d3.forceSimulation()
-//        .force("gravity", 3)
+//  .force("gravity", 3)
     .force("link",
             d3.forceLink().id(function(d) { return d.id; })
                     .strength(function(d) {
-//                        console.log("d.strengthMul: " + d.strengthMul);
                         return 3;
-//                        return 1 / Math.min(count(link.source), count(link.target));
-//                        return (typeof d.strengthMul === "undefined") ? 3 : d.strengthMul
+//                      return 1 / Math.min(count(link.source), count(link.target));
+//                      return (typeof d.strengthMul === "undefined") ? 3 : d.strengthMul
                     }))
     .force("charge", d3.forceManyBody().strength(-1000))
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
 //simulation.force("charge", function() {
 ////        return (d.sizeMult ? d.sizeMult : 1) * 100 }
 //            return -1000000;
 //        })
-    .force("center", d3.forceCenter(width / 2, height / 2));
+
 
 const bigSize = 1.76, midSize = 1.25;
 
@@ -1750,7 +1752,6 @@ var nodesArray = nodesKeys.map(function(v) { return nodes[v]; });
 
 
 var graph = { nodes: nodesWebOnly, links: linksWebOnly  };
-//window.alert(JSON.stringify(graph.nodes));
 
 
 var allLinksGroup = svg.append("g")
