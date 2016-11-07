@@ -509,23 +509,25 @@ svgRootElement.call(d3.zoom().on("zoom", function () {
 //var color = d3.scaleOrdinal(d3.schemeCategory20);
 var color = d3.rgb(230,230,230, 128);
 
-// Example: Force-Directed Graph: https://bl.ocks.org/mbostock/4062045
+/* Base Example:
+   Force-Directed Graph: https://bl.ocks.org/mbostock/4062045 */
 var simulation = d3.forceSimulation()
-//        .force("gravity", 3)
+//  .force("gravity", 3)
     .force("link",
             d3.forceLink().id(function(d) { return d.id; })
                     .strength(function(d) {
-//                        console.log("d.strengthMul: " + d.strengthMul);
                         return 3;
-//                        return 1 / Math.min(count(link.source), count(link.target));
-//                        return (typeof d.strengthMul === "undefined") ? 3 : d.strengthMul
+//                      return 1 / Math.min(count(link.source), count(link.target));
+//                      return (typeof d.strengthMul === "undefined") ? 3 : d.strengthMul
                     }))
     .force("charge", d3.forceManyBody().strength(-1000))
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
 //simulation.force("charge", function() {
 ////        return (d.sizeMult ? d.sizeMult : 1) * 100 }
 //            return -1000000;
 //        })
-    .force("center", d3.forceCenter(width / 2, height / 2));
+
 
 const bigSize = 1.76, midSize = 1.25;
 
@@ -1750,7 +1752,6 @@ var nodesArray = nodesKeys.map(function(v) { return nodes[v]; });
 
 
 var graph = { nodes: nodesWebOnly, links: linksWebOnly  };
-//window.alert(JSON.stringify(graph.nodes));
 
 
 var allLinksGroup = svg.append("g")
@@ -1860,6 +1861,11 @@ var nodeCircleMouseOver = perNodeMainGroup  /* need to set position separately i
 //                .on("start", dragstarted)
 //                .on("drag", dragged)
 //                .on("end", dragended));
+function unHighlightHover(d) {
+//    $('#' + d.id).removeClass("techCircleHover", false);
+    $('.techCircleHover').removeClass("techCircleHover", false);
+    d3.select(".techCircleHover").classed("techCircleHover", false);
+}
 var nodeCircleOverlay = allNodesGroup  /* need to set position separately in root, because of jerky movement issue with drag&drop and "translate(...)" transform */
         .append("rect")
 //        .attr("r", radiusFunc)
@@ -1874,21 +1880,17 @@ var nodeCircleOverlay = allNodesGroup  /* need to set position separately in roo
         .classed("techCircleOverlay", true)
 
         .on("mouseover", function(d) {
+            if ( ! isDragging ) {
 //            $('tech').hover(function() {
-            $('.'+d.id ).css('background-color','rgba(0, 0, 0, 0.6)');
-            $('.'+d.id + '_background').css('background-color','rgba(0, 0, 0, 0.6)');
-            $('#'+d.id).addClass("techCircleHover");
+                $('#'+d.id).addClass("techCircleHover");
 //            $("[id2='"+ d.id + "']").css('background-color','rgba(0, 0, 0, 0.6)');
-//            d3.select(this).style("fill", "red");
-            $("."+d.id + '_background').css('background-color','rgba(0, 0, 0, 0.6)');
-//        window.alert('mouserover: ' + d.id);
-//            d3.select(this).style("fill", "#fff8ee00");
-            d3.select(this).classed("techCircleHover", true); //"#fff8ee00"
+                $("."+d.id + '_background').css('background-color','rgba(0, 0, 0, 0.6)');
+                d3.select(this).classed("techCircleHover", true); //"#fff8ee00"
+            }
         })
         .on("mouseout", function(d) {
             if ( ! isDragging ) { /* While dragging, the highlight shall stay */
-                $('#'+d.id).removeClass("techCircleHover", false);
-                d3.select(this).classed("techCircleHover", false);
+                unHighlightHover.call(this, d);
             }
         })
 
@@ -1984,6 +1986,7 @@ function dragged(d) {
 
 function dragended(d) {
     isDragging = false;
+    unHighlightHover()
 
     if (!d3.event.active) {
         simulation.alphaTarget(0);
