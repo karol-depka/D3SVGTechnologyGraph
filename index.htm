@@ -495,14 +495,14 @@ tech:hover {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script>
 
-var svgReal = d3.select("svg"),
-    width = +svgReal.attr("width"),
-    height = +svgReal.attr("height");
+var svgRootElement = d3.select("svg"),
+    width = +svgRootElement.attr("width"),
+    height = +svgRootElement.attr("height");
 
-var svg = svgReal.append("g"); /* actually a <g>, to fix transform not working in <svg> on chrome:
+var svg = svgRootElement.append("g"); /* actually a <g>, to fix transform not working in <svg> on chrome:
         http://stackoverflow.com/questions/27283610/d3-workaround-for-svg-transform-in-chrome */
 
-svgReal.call(d3.zoom().on("zoom", function () {
+svgRootElement.call(d3.zoom().on("zoom", function () {
     svg.attr("transform", d3.event.transform)
 }));
 
@@ -1785,6 +1785,8 @@ simulation.force("link")
         });
 
 const defaultRadius = 23;
+var isDragging = false;
+
 const radiusFunc = function(d) {
     return d.sizeMult ? d.sizeMult * defaultRadius : defaultRadius
 };
@@ -1884,12 +1886,12 @@ var nodeCircleOverlay = allNodesGroup  /* need to set position separately in roo
             d3.select(this).classed("techCircleHover", true); //"#fff8ee00"
         })
         .on("mouseout", function(d) {
-            $('#'+d.id).removeClass("techCircleHover", false);
-//            $('#'+d.id).css({ fill: "#00FF00" });
-            $('.'+d.id).css('background-color','rgba(200, 200, 200, 0.6)');
-            $('.'+d.id+'_background').css('background-color','rgba(200, 200, 200, 0.6)');
-//            d3.select(this).style("fill", "#fff8ee80");
-            d3.select(this).classed("techCircleHover", false); //"#fff8ee00"
+            if ( ! isDragging ) { /* While dragging, the highlight shall stay */
+                $('#'+d.id).removeClass("techCircleHover", false);
+                $('.'+d.id).css('background-color','rgba(200, 200, 200, 0.6)');
+                $('.'+d.id+'_background').css('background-color','rgba(200, 200, 200, 0.6)');
+                d3.select(this).classed("techCircleHover", false); //"#fff8ee00"
+            }
         })
 
         .call(d3.drag()
@@ -1968,24 +1970,28 @@ nodeCircleOverlay.append("title")
 //});
 
 function dragstarted(d) {
-  if (!d3.event.active) {
-      simulation.alphaTarget(0.3).restart();
-  }
-  d.fx = d.x;
-  d.fy = d.y;
+    isDragging = true;
+    if (!d3.event.active) {
+        simulation.alphaTarget(0.3).restart();
+    }
+    d.fx = d.x;
+    d.fy = d.y;
 }
 
 function dragged(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
+    isDragging = true; // just in case...
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
 }
 
 function dragended(d) {
-  if (!d3.event.active) {
-      simulation.alphaTarget(0);
-  }
-  d.fx = null;
-  d.fy = null;
+    isDragging = false;
+
+    if (!d3.event.active) {
+        simulation.alphaTarget(0);
+    }
+    d.fx = null;
+    d.fy = null;
 }
 
 </script>
