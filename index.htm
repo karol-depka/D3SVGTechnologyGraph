@@ -1888,9 +1888,7 @@ var nodeCircleOverlay = allNodesGroup  /* need to set position separately in roo
         .on("mouseout", function(d) {
             if ( ! isDragging ) { /* While dragging, the highlight shall stay */
                 $('#'+d.id).removeClass("techCircleHover", false);
-                $('.'+d.id).css('background-color','rgba(200, 200, 200, 0.6)');
-                $('.'+d.id+'_background').css('background-color','rgba(200, 200, 200, 0.6)');
-                d3.select(this).classed("techCircleHover", false); //"#fff8ee00"
+                d3.select(this).classed("techCircleHover", false);
             }
         })
 
