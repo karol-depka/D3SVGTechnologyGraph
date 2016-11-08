@@ -1806,6 +1806,7 @@ var nodeCircle = perNodeMainGroup.append("circle")
 const foW = 100; // foreign object width
 const foH = 50;
 const defaultSize = 30;
+
 perNodeMainGroup.append("g").html(function(d) {
     var bodyText = d.body || "";
     var size = d.sizeMult ? d.sizeMult * defaultSize : defaultSize;
@@ -1817,7 +1818,10 @@ perNodeMainGroup.append("g").html(function(d) {
         return "";
     }
 });
+
+
 const border=0;
+
 perNodeMainGroup.append("foreignObject")
         .attr("style", "pointer-events:none; border: " + border + "px solid green")
         .attr("width", foW)
@@ -1835,23 +1839,7 @@ perNodeMainGroup.append("foreignObject")
                     "<p style='display: table-cell; vertical-align: middle'>"+ bodyText + "</p></div>";
         });
 
-var nodeCircleMouseOver = perNodeMainGroup  /* need to set position separately in root, because of jerky movement issue with drag&drop and "translate(...)" transform */
-        .append("rect")
-        //        .attr("r", radiusFunc)
-        .attr("width", radiusFuncRect*3)
-        .attr("height", radiusFuncRect*3)
-        //        .attr("x", 0)
-                .attr("x", -defaultRadius)
-        //        .attr("y", 0)
-                .attr("y", -defaultRadius)
-//        .classed("techCircleOverlay", true)
-        .classed("techCircleMouseOver", true)
-//        .call(d3.drag()
-//                .on("start", dragstarted)
-//                .on("drag", dragged)
-//                .on("end", dragended));
 function unHighlightHover(d) {
-//    $('#' + d.id).removeClass("techCircleHover", false);
     $('.techCircleHover').removeClass("techCircleHover", false);
     d3.select(".techCircleHover").classed("techCircleHover", false);
 }
