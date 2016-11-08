@@ -1809,11 +1809,17 @@ const defaultSize = 30;
 
 perNodeMainGroup.append("g").html(function(d) {
     var bodyText = d.body || "";
-    var size = d.sizeMult ? d.sizeMult * defaultSize : defaultSize;
+    var size = d.sizeMult ? d.sizeMult * defaultSize
+            : defaultSize;
 
     if (bodyText.trim().endsWith("</svg>")) {
-        return '<svg width=\"' + size + 'px\" height=\"' + size + 'px\" ' +
-                'x="'+ -size/2 + '" y="' + -size/2 + '"' + bodyText;
+        const htmlContent = '<svg '
+                + 'width=\"'  + size + 'px\" '
+                + 'height=\"' + size + 'px\" '
+                + 'x="' + (-size/2) + '" '
+                + 'y="' + (-size/2) + '" '
+                + bodyText /* also contains </svg> */;
+        return htmlContent;
     } else {
         return "";
     }
@@ -1835,8 +1841,11 @@ perNodeMainGroup.append("foreignObject")
                 return ""; // has icon - no need for text
             }
             var bodyText = d.html || d.id;
-            return "<div style='display: table; text-align:center; height:100%; width:100%; border: " + border + "px solid green; '>" +
-                    "<p style='display: table-cell; vertical-align: middle'>"+ bodyText + "</p></div>";
+            return "<div style='display: table; text-align:center;" +
+                    "height:100%; width:100%;" +
+                    "border: " + border + "px solid green; '>" +
+                    "<p style='display: table-cell; vertical-align: middle'>" +
+                    bodyText + "</p></div>";
         });
 
 function unHighlightHover(d) {
