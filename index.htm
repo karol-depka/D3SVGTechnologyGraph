@@ -1803,8 +1803,8 @@ var nodeCircle = perNodeMainGroup.append("circle")
         ;
 
 
-const foW = 100; // foreign object width
-const foH = 50;
+const foreignObjectW = 100; // foreign object width
+const foreignObjectH = 50;
 const defaultSize = 30;
 
 perNodeMainGroup.append("g").html(function(d) {
@@ -1829,22 +1829,23 @@ perNodeMainGroup.append("g").html(function(d) {
 const border=0;
 
 perNodeMainGroup.append("foreignObject")
-        .attr("style", "pointer-events:none; border: " + border + "px solid green")
-        .attr("width", foW)
-        .attr("height", foH)
-        .attr("height", foH)
-        .attr("x", -foW/2)
-        .attr("y", -foH/2)
+        .attr("style", "pointer-events:none;")
+        .attr("width", foreignObjectW)
+        .attr("height", foreignObjectH)
+        .attr("height", foreignObjectH)
+        .attr("x", -foreignObjectW/2)
+        .attr("y", -foreignObjectH/2)
         .style("font", "9px 'Helvetica Neue'")
         .html(function(d) {
             if ( d.body ) {
-                return ""; // has icon - no need for text
+                return ""; // has icon: no need for text
             }
             var bodyText = d.html || d.id;
-            return "<div style='display: table; text-align:center;" +
-                    "height:100%; width:100%;" +
-                    "border: " + border + "px solid green; '>" +
-                    "<p style='display: table-cell; vertical-align: middle'>" +
+            return "<div style='display: table;" +
+                    "text-align:center;" +
+                    "height:100%; width:100%'>" +
+                    "<p style='display: table-cell; " +
+                    "vertical-align: middle'>" +
                     bodyText + "</p></div>";
         });
 
