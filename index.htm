@@ -1812,7 +1812,6 @@ perNodeMainGroup.append("g").html(function(d) {
 
     if (bodyText.trim().endsWith("</svg>")) {
         return '<svg width=\"' + size + 'px\" height=\"' + size + 'px\" ' +
-//                        'x="'+ (foW-iconW)/2 + '" y="' + (foH-iconH)/2 + '"' + bodyText;
                 'x="'+ -size/2 + '" y="' + -size/2 + '"' + bodyText;
     } else {
         return "";
@@ -1826,21 +1825,14 @@ perNodeMainGroup.append("foreignObject")
         .attr("height", foH)
         .attr("x", -foW/2)
         .attr("y", -foH/2)
-//        .append("xhtml:body").attr("height", "100%")
         .style("font", "9px 'Helvetica Neue'")
-//        .html("<div style='text-align:center;  border: 1px solid green;'>Foreign<br/><b>Object</b>");
         .html(function(d) {
             if ( d.body ) {
                 return ""; // has icon - no need for text
             }
-
-//            var iconW = size, iconH = size;
-//            var offset = size / -2;
             var bodyText = d.html || d.id;
-
-                return "<div style='display: table; text-align:center; height:100%; width:100%; border: " + border + "px solid green; '>" +
-                        "<p style='display: table-cell; vertical-align: middle'>"+ bodyText + "</p></div>";
-//            return '<text>' +  d.body + '</text>';
+            return "<div style='display: table; text-align:center; height:100%; width:100%; border: " + border + "px solid green; '>" +
+                    "<p style='display: table-cell; vertical-align: middle'>"+ bodyText + "</p></div>";
         });
 
 var nodeCircleMouseOver = perNodeMainGroup  /* need to set position separately in root, because of jerky movement issue with drag&drop and "translate(...)" transform */
