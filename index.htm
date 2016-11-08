@@ -1895,9 +1895,9 @@ var nodeCircleOverlay = allNodesGroup  /* need to set position separately in roo
         })
 
         .call(d3.drag()
-                .on("start", dragstarted)
+                .on("start", dragStarted)
                 .on("drag", dragged)
-                .on("end", dragended));
+                .on("end", dragEnded));
 
 const titleFunc = function(d) { return d.id; };
 nodeCircle.append("title")
@@ -1969,7 +1969,7 @@ nodeCircleOverlay.append("title")
 //    });
 //});
 
-function dragstarted(d) {
+function dragStarted(d) {
     isDragging = true;
     if (!d3.event.active) {
         simulation.alphaTarget(0.3).restart();
@@ -1984,7 +1984,7 @@ function dragged(d) {
     d.fy = d3.event.y;
 }
 
-function dragended(d) {
+function dragEnded(d) {
     isDragging = false;
     unHighlightHover()
 
